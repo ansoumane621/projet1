@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intel Image Classification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h1>Intel Image Classifier</h1>
+                </div>
+                <p class="subtitle">Classify scenic images using Deep Learning</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Model Selection Card -->
+            <div class="card model-card">
+                <div class="card-header">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <path d="M12 6V12L16 14" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <h2>Select Model</h2>
+                </div>
+                <div class="model-selector">
+                    <label class="model-option">
+                        <input type="radio" name="model" value="pytorch" checked>
+                        <div class="model-card-inner">
+                            <div class="model-name">PyTorch</div>
+                            <div class="model-desc">CNN from scratch</div>
+                        </div>
+                    </label>
+                    <label class="model-option">
+                        <input type="radio" name="model" value="tensorflow">
+                        <div class="model-card-inner">
+                            <div class="model-name">TensorFlow</div>
+                            <div class="model-desc">Keras Sequential</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="card upload-card">
+                <div class="card-header">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 8L12 3L7 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 3V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h2>Upload Image</h2>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg,image/gif" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 8L12 3L7 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p class="upload-text">Click to upload or drag and drop</p>
+                        <p class="upload-subtext">PNG, JPG, JPEG or GIF (max 16MB)</p>
+                    </div>
+                </div>
+
+                <div class="image-preview" id="imagePreview" style="display: none;">
+                    <img id="previewImage" alt="Preview">
+                    <button class="remove-btn" id="removeImage">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18 6L6 18M6 6L18 18" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <button class="btn btn-primary" id="predictBtn" disabled>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Classify Image
+                </button>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card results-card" id="resultsCard" style="display: none;">
+                <div class="card-header">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18457 2.99721 7.13633 4.39828 5.49707C5.79935 3.85782 7.69279 2.71538 9.79619 2.24015C11.8996 1.76491 14.1003 1.9823 16.07 2.85999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 4L12 14.01L9 11.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h2>Classification Result</h2>
+                </div>
+
+                <div class="result-main">
+                    <div class="result-label">Predicted Class</div>
+                    <div class="result-class" id="resultClass">-</div>
+                    <div class="result-confidence">
+                        <span class="confidence-label">Confidence:</span>
+                        <span class="confidence-value" id="resultConfidence">-</span>
+                    </div>
+                    <div class="model-used">
+                        <span>Model:</span>
+                        <span id="modelUsed" class="model-badge">-</span>
+                    </div>
+                </div>
+
+                <div class="probabilities" id="probabilities">
+                    <!-- Probability bars will be inserted here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with PyTorch & TensorFlow | Dataset: Intel Image Classification (6 classes)</p>
+            <p class="classes-info">Classes: buildings • forest • glacier • mountain • sea • street</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Classifying image...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

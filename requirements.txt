@@ -1,8 +1,9 @@
 Flask==3.0.0
 torch==2.11.0
-tensorflow==2.15.0
+tensorflow==2.19.0
 Pillow==12.2.0
 numpy==1.26.4
 Werkzeug==3.0.1
 gunicorn==21.2.0
 torchvision==0.26.0
+keras==3.12.1
